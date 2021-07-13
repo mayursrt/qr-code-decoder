@@ -33,11 +33,12 @@ st.write('')
 
 #----------------------------------------------------------------------------------------------------------------------------
 # User Input
-
-with st.form(key='my_form', clear_on_submit=False):
-    qr_image = st.file_uploader("Upload a QR Code", type=['png','jpeg','jpg'])
-    st.text('Note : Prefer to upload a QR Code image')
-    submit_button = st.form_submit_button(label='Decode')
+qr_image = st.file_uploader("Upload a QR Code", type=['png','jpeg','jpg'])
+st.text('Note : Prefer to upload a QR Code image')
+# with st.form(key='my_form', clear_on_submit=False):
+    
+#     st.text('Note : Prefer to upload a QR Code image')
+#     submit_button = st.form_submit_button(label='Decode')
 
 #----------------------------------------------------------------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ with st.form(key='my_form', clear_on_submit=False):
 
 #----------------------------------------------------------------------------------------------------------------------------
 # Main Function
-# @st.cache
+@st.cache
 def show_qr_detection(img,pts):
     
     pts = np.int32(pts).reshape(-1, 2)
@@ -59,7 +60,7 @@ def show_qr_detection(img,pts):
         cv2.circle(img, tuple(pts[j]), 10, (255, 0, 255), -1)
 
 
-# @st.cache
+@st.cache
 def qr_code_dec(image):
 
     decoder = cv2.QRCodeDetector()
@@ -74,7 +75,7 @@ def qr_code_dec(image):
         
         rectified_image = np.uint8(rectified_qr_code)
         
-        decoded_data = data
+        decoded_data = 'Decoded data: '+ data
         
         rectified_image = cv2.putText(rectified_image,decoded_data,(50,350),fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale = 2,
             color = (250,225,100),thickness =  3, lineType=cv2.LINE_AA)
@@ -87,16 +88,23 @@ def qr_code_dec(image):
 
 
 
-ph = st.empty()
-col1, col2, col3 = st.beta_columns([5,10,5])
+
 
 if qr_image:
-    ph.markdown("<h2 style='text-align: center; color: black;'>Uploaded Image/QR Code</h1>", unsafe_allow_html=True)
-    qr_image = np.array(Image.open(qr_image))
-    decoded_qr_data = qr_code_dec(qr_image)
-    col2.image(qr_image, use_column_width=True)
-    st.markdown(f"<h3 style='text-align: center; color: black;'>Decoded Data : {decoded_qr_data}</h1>", unsafe_allow_html=True)
+    try:
+        ph = st.empty()
+        col1, col2, col3 = st.beta_columns([5,10,5])
+        ph.markdown("<h2 style='text-align: center; color: black;'>Uploaded Image/QR Code</h1>", unsafe_allow_html=True)
+        qr_image = np.array(Image.open(qr_image))
+        decoded_qr_data = qr_code_dec(qr_image)
+        col2.image(qr_image, use_column_width=True)
+        st.markdown(f"<h3 style='text-align: center; color: black;'>{decoded_qr_data}</h1>", unsafe_allow_html=True)
 
+    except Exception as e:
+        st.markdown(f"<p style='text-align: center; color: red;'>Please upload a valid QR Code image</p>", unsafe_allow_html=True)
+
+
+    
 #----------------------------------------------------------------------------------------------------------------------------
 
 
