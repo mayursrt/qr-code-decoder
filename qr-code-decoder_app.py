@@ -3,8 +3,7 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-import cv2
-# from qrtools.qrtools import QR
+from functions import *
 #----------------------------------------------------------------------------------------------------------------------------
 
 
@@ -21,13 +20,9 @@ with title_container:
         st.title('QR Code Decoder')
         st.markdown("""
 Decode QR Codes on the go.
-
 """)
 st.write('')
 #----------------------------------------------------------------------------------------------------------------------------
-
-
-
 
 
 
@@ -35,61 +30,12 @@ st.write('')
 # User Input
 qr_image = st.file_uploader("Upload a QR Code", type=['png','jpeg','jpg'])
 st.text('Note : Prefer to upload a QR Code image')
-# with st.form(key='my_form', clear_on_submit=False):
-    
-#     st.text('Note : Prefer to upload a QR Code image')
-#     submit_button = st.form_submit_button(label='Decode')
-
 #----------------------------------------------------------------------------------------------------------------------------
 
 
 
-
-#----------------------------------------------------------------------------------------------------------------------------
-# Main Function
-@st.cache
-def show_qr_detection(img,pts):
-    
-    pts = np.int32(pts).reshape(-1, 2)
-    
-    for j in range(pts.shape[0]):
-        
-        cv2.line(img, tuple(pts[j]), tuple(pts[(j + 1) % pts.shape[0]]), (255, 0, 0), 5)
-        
-    for j in range(pts.shape[0]):
-        cv2.circle(img, tuple(pts[j]), 10, (255, 0, 255), -1)
-
-
-@st.cache
-def qr_code_dec(image):
-
-    decoder = cv2.QRCodeDetector()
-    
-    data, vertices, rectified_qr_code = decoder.detectAndDecode(image)
-    
-    if len(data) > 0:
-        print("Decoded Data: '{}'".format(data))
-
-    # Show the detection in the image:
-        show_qr_detection(image, vertices)
-        
-        rectified_image = np.uint8(rectified_qr_code)
-        
-        decoded_data = 'Decoded data: '+ data
-        
-        rectified_image = cv2.putText(rectified_image,decoded_data,(50,350),fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale = 2,
-            color = (250,225,100),thickness =  3, lineType=cv2.LINE_AA)
-        
-        
-    return decoded_data
-#----------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------
 # Body
-
-
-
-
-
 if qr_image:
     try:
         ph = st.empty()
@@ -101,21 +47,24 @@ if qr_image:
         st.markdown(f"<h3 style='text-align: center; color: black;'>{decoded_qr_data}</h1>", unsafe_allow_html=True)
 
     except Exception as e:
-        st.markdown(f"<p style='text-align: center; color: red;'>Please upload a valid QR Code image</p>", unsafe_allow_html=True)
-
-
-    
+        st.markdown(f"<p style='text-align: center; color: red;'>Cannot extract information from the uploaded image, Please upload a valid QR Code image</p>", unsafe_allow_html=True)
 #----------------------------------------------------------------------------------------------------------------------------
+
+
+
+#----------------------------------------------------------------------------------------------------------------------------
+# Links
+st.write('')
+st.markdown(f"<p style='text-align: center; color: black;'>To generate a QR Code from a link or any text, visit this <a href='https://qr-code-generat0r.herokuapp.com/'>QR Code Generator.</a></p>.", unsafe_allow_html=True)
+#---------------------------------------------------------------------------------------------------------------------------
 
 
 
 #---------------------------------------------------------------------------------------------------------------------------
 # Footer
-
-#MainMenu {visibility: hidden;}
 footer="""<style>
 
-
+#MainMenu {visibility: hidden;}
 a:link , a:visited{
 color: black;
 background-color: transparent;
