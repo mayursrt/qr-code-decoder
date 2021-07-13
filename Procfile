@@ -1,0 +1,1 @@
+web: sh setup.sh && streamlit run qr-code-decoder_app.py
